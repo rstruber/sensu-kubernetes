@@ -78,19 +78,59 @@ Here's the workflow I've been using to build docker images locally, and run them
     sensu-redis    10.47.247.204   <none>           6379/TCP         2d
     sensu-server   10.47.252.108   <pending>   4567:<somerandomport>/TCP   21m
     ```
-
-    You should now be able to query the "sensu-server" service "EXTERNAL-IP" to
+    
+    You should now be able to query the "sensu-server" service to
     hit the Sensu API, as follows:
 
     ```
-    $ curl -s http://104.197.74.159:4567/clients
+    $ curl -s http://192.168.99.100:<somerandomport>/clients
     ```
 
 The instructions above will get you the following:
 * Sensu server container (running the api/server services)
 * Redis container for use as the transport/datastore
-  _NOTE: In practice, we **HIGHLY** recommend using RabbitMQ as the transport instead. This is purely for demo purposes and shouldn't be relied on as a production-ready solution._\
+  _NOTE: In practice, we **HIGHLY** recommend using RabbitMQ as the transport instead. 
+  This is purely for demo purposes and shouldn't be relied on as a production-ready solution._
 
 If you'd like to see Sensu & Kubernetes in action dumping some pseudo-realistic stats to a TSDB (InfluxDB, in this case), proceed below to 
 
 ### Part 2: Spin up a dummy app & InfluxDB instance 
+
+To spin up the Dummy app, head on over to the [README](docker/dummy/README.md), which will cover prerequisites for getting the dummy app, as well as the prometheus collector up and running. For more information about the prometheus collector, see [Portertech's repo](https://github.com/portertech/sensu-prometheus-collector).
+
+For making this a bit more expedient:
+
+```
+$ docker build -t dummy:latest docker/dummy/
+```
+
+The above will build a docker image with a dummy load-balanced application with the sensu-prometheus-exporter binary already in place and ready to send metrics to an InfluxDB instance. 
+
+Once you've created the image, you'll need to set up your Kubernetes service/deployment:
+
+```
+$ cd kubernetes
+$ kubectl create -f dummy-backend-service.yaml
+$ kubectl create -f dummy-backend-deployment.yaml
+```
+
+You should then see your dummy-backend nodes showing up. To get the IP/Port of the Sensu api, you can do:
+
+```
+$ minikube service list
+|-------------|----------------------|-----------------------------|
+|  NAMESPACE  |         NAME         |             URL             |
+|-------------|----------------------|-----------------------------|
+| default     | dummy-backend        | http://192.168.99.100:32590 |
+| default     | kubernetes           | No node port                |
+| default     | sensu-enterprise     | http://192.168.99.100:30600 |
+| default     | sensu-redis          | No node port                |
+| default     | sensu-server         | http://192.168.99.100:32253 |
+| kube-system | kube-dns             | No node port                |
+| kube-system | kubernetes-dashboard | http://192.168.99.100:30000 |
+|-------------|----------------------|-----------------------------|
+```
+
+Optionally, you can do `$ minkube service --url sensu-server`, which should return the port mapping similar to the above table.
+
+Why do you need this? Well, the current docker image for Sensu that's been deployed here doesn't include the Uchiwa dashboard. But, you can use say, a [Sensu Vagrant machine](https://github.com/asachs01/sensu-up-and-running) which does include a dashboard to connect to the sensu-api service in your Docker container and see the clients present. 
