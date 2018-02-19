@@ -1,0 +1,14 @@
+{
+  "client": {
+    "deregister": true,
+    "keepalive": {
+      "thresholds": {
+        "warning": 60,
+        "critical": 80
+      },
+      "handlers": [
+        "deregistration_kubernetes"
+      ]
+    }
+  }
+}

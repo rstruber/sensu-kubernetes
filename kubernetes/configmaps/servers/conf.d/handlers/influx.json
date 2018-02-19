@@ -1,0 +1,12 @@
+{
+  "handlers": {  
+  "influx": {
+    "type": "udp",
+    "mutator": "only_check_output",
+    "socket": {
+      "host": "influxdb.example.com",
+      "port": 8089
+      }
+    }
+  }
+}

@@ -1,0 +1,12 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: sensu-server
+spec:
+  selector:
+    app: sensu-server
+  ports:
+  - protocol: TCP
+    port: 4567
+    targetPort: 4567
+  type: LoadBalancer

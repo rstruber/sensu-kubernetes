@@ -1,0 +1,13 @@
+{
+  "checks": {
+    "prometheus_metrics": {
+      "type": "metric",
+      "command": "/usr/bin/sensu-prometheus-collector -exporter-url http://localhost:8080/metrics",
+      "subscribers": ["backend"],
+      "interval": 10,
+      "handlers": ["influx"]
+    }
+  }
+}
+
+

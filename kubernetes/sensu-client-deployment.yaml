@@ -1,0 +1,39 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sensu-client
+  labels:
+    app: sensu-client
+spec:
+  replicas: 3
+  selector:
+    matchLabels:
+      app: sensu-client
+  template:
+    metadata:
+      labels:
+        app: sensu-client
+    spec:
+      volumes:
+      - name: sensu-client-config
+        configMap:
+          name: sensu-client-config
+
+      containers:
+      - name: sensu-client
+        image: sensu:latest
+        imagePullPolicy: Never
+        env:
+        - name: SENSU_TRANSPORT_NAME
+          value: "redis"
+        - name: REDIS_URL
+          value: "redis://$(SENSU_REDIS_SERVICE_HOST):$(SENSU_REDIS_SERVICE_PORT)/0"
+        - name: SENSU_CLIENT_SUBSCRIPTIONS
+          value: "roundrobin:proxy-request-poller,docker,kubernetes"
+        ports:
+        - containerPort: 3030
+        - containerPort: 3031
+        volumeMounts:
+        - name: sensu-client-config
+          mountPath: /etc/sensu/conf.d/client/
+        command: ["/opt/sensu/bin/sensu-client"]

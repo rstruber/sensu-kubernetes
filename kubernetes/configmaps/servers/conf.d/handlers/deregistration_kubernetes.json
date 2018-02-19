@@ -1,0 +1,9 @@
+{
+  "handlers": {
+    "kubernetes_deregistration": {
+      "type": "pipe",
+      "command": "/opt/sensu/embedded/bin/ruby /etc/sensu/plugins/deregistration_kubernetes.rb",
+      "timeout": 10
+    }
+  }
+}

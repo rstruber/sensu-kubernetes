@@ -1,0 +1,77 @@
+apiVersion: extensions/v1beta1
+kind: Deployment
+metadata:
+  name: sensu-server
+  labels:
+    app: sensu-server
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: sensu-server
+  template:
+    metadata:
+      labels:
+        app: sensu-server
+    spec:
+      volumes:
+      - name: sensu-server-config
+        configMap:
+          name: sensu-server-config
+      - name: sensu-server-check-config
+        configMap:
+          name: sensu-server-check-config
+      - name: sensu-server-handler-config
+        configMap:
+          name: sensu-server-handler-config
+
+      containers:
+      - name: sensu-server
+        image: sensu:latest
+        imagePullPolicy: Never
+        env:
+        - name: SENSU_TRANSPORT_NAME
+          value: "redis"
+        - name: REDIS_URL
+          value: "redis://$(SENSU_REDIS_SERVICE_HOST):$(SENSU_REDIS_SERVICE_PORT)/0"
+        volumeMounts:
+        - name: sensu-server-config
+          mountPath: /etc/sensu/conf.d/server/
+        - name: sensu-server-check-config
+          mountPath: /etc/sensu/conf.d/checks/
+        - name: sensu-server-handler-config
+          mountPath: /etc/sensu/conf.d/handlers/
+        command: ["/opt/sensu/bin/sensu-server"]
+
+      - name: sensu-api
+        image: sensu:latest
+        imagePullPolicy: Never
+        env:
+        - name: SENSU_TRANSPORT_NAME
+          value: "redis"
+        - name: REDIS_URL
+          value: "redis://$(SENSU_REDIS_SERVICE_HOST):$(SENSU_REDIS_SERVICE_PORT)/0"
+        - name: SENSU_API_PORT
+          value: "4567"
+        ports:
+        - containerPort: 4567
+        volumeMounts:
+        - name: sensu-server-config
+          mountPath: /etc/sensu/conf.d/server/
+        - name: sensu-server-check-config
+          mountPath: /etc/sensu/conf.d/checks/
+        - name: sensu-server-handler-config
+          mountPath: /etc/sensu/conf.d/handlers/
+        command: ["/opt/sensu/bin/sensu-api"]
+        readinessProbe:
+          httpGet:
+            path: /health
+            port: 4567
+          initialDelaySeconds: 10
+          periodSeconds: 5
+        livenessProbe:
+          httpGet:
+            path: /health
+            port: 4567
+          initialDelaySeconds: 10
+          periodSeconds: 60
