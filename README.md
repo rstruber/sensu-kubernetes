@@ -16,6 +16,12 @@ Here's the workflow I've been using to build docker images locally, and run them
   kubectl installed._
 
 ### Part 1: Build/Deploy Sensu in a containerized environment
+This part assumes you've gone through the prerequisites of setting up Minikube and have it started. If not, do not pass go, do not collect 200 containers. 
+
+Before starting, make sure that minikube is using the docker environment:
+```
+eval $(minikube docker-env)
+```
 
 1. Build a docker image  
 
@@ -49,24 +55,18 @@ Here's the workflow I've been using to build docker images locally, and run them
 
     ```
     $ kubectl create configmap sensu-client-config --from-file=./configmaps/clients/conf.d/client/
-    configmap "sensu-client-config" created
     $ kubectl create configmap sensu-server-config --from-file=./configmaps/servers/conf.d/server/
-    configmap "sensu-server-config" created
     $ kubectl create configmap sensu-server-check-config --from-file=./configmaps/servers/conf.d/checks/
     configmap "sensu-server-check-config" created
     $ kubectl create configmap sensu-server-handler-config --from-file=./configmaps/servers/conf.d/handlers/
-    configmap "sensu-server-handler-config" created
-    $ kubectl create configmap sensu-server-filter-config --from-file=./configmaps/servers/conf.d/filters/
-    configmap "sensu-server-filter-config" created
     ```
 
 7. Deploy Sensu using `kubectl`:
 
     ```
+    $ kubectl create -f sensu-client-deployment.yaml
     $ kubectl create -f sensu-redis-deployment.yaml
-    deployment "sensu-redis-deployment" created
     $ kubectl create -f sensu-server-deployment.yaml
-    deployment "sensu-server-deployment" created
     ```
 
 8. Verify the provisioning:
@@ -89,6 +89,7 @@ Here's the workflow I've been using to build docker images locally, and run them
 The instructions above will get you the following:
 * Sensu server container (running the api/server services)
 * Redis container for use as the transport/datastore
+* A set of sensu-clients to demo checks with.
   _NOTE: In practice, we **HIGHLY** recommend using RabbitMQ as the transport instead. 
   This is purely for demo purposes and shouldn't be relied on as a production-ready solution._
 
@@ -98,10 +99,12 @@ If you'd like to see Sensu & Kubernetes in action dumping some pseudo-realistic 
 
 To spin up the Dummy app, head on over to the [README](docker/dummy/README.md), which will cover prerequisites for getting the dummy app, as well as the prometheus collector up and running. For more information about the prometheus collector, see [Portertech's repo](https://github.com/portertech/sensu-prometheus-collector).
 
-For making this a bit more expedient:
+For making this a bit more expedient (and presuming you have golang installed):
 
 ```
-$ cd dummy
+$ cd sensu-kubernetes/docker/dummy
+$ go get github.com/gorilla/mux
+$ go get github.com/prometheus/client_golang/prometheus/promhttp
 $ CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' .
 $ docker build -t dummy:latest .
 ```
@@ -111,7 +114,7 @@ The above will build a docker image with a dummy load-balanced application with 
 Once you've created the image, you'll need to set up your Kubernetes service/deployment:
 
 ```
-$ cd kubernetes
+$ cd sensu-kubernetes/kubernetes
 $ kubectl create -f dummy-backend-service.yaml
 $ kubectl create -f dummy-backend-deployment.yaml
 ```
