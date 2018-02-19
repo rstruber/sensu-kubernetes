@@ -101,7 +101,9 @@ To spin up the Dummy app, head on over to the [README](docker/dummy/README.md), 
 For making this a bit more expedient:
 
 ```
-$ docker build -t dummy:latest docker/dummy/
+$ cd dummy
+$ CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' .
+$ docker build -t dummy:latest .
 ```
 
 The above will build a docker image with a dummy load-balanced application with the sensu-prometheus-exporter binary already in place and ready to send metrics to an InfluxDB instance. 
