@@ -37,4 +37,6 @@ RUN \
 
 COPY files/deregistration.rb /etc/sensu/plugins/deregistration.rb
 COPY files/deregistration_kubernetes.rb /etc/sensu/plugins/deregistration_kubernetes.rb
+COPY sensu-prometheus-collector /usr/bin/sensu-prometheus-collector
+RUN chmod +x /usr/bin/sensu-prometheus-collector
 
