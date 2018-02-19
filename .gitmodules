@@ -1,3 +1,0 @@
-[submodule "dummy"]
-	path = docker/dummy
-	url = git@github.com:portertech/dummy.git
