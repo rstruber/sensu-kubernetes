@@ -3,7 +3,8 @@
     "entropy_check": {
       "command": "SENSU_CHECK_OUTPUT=$RANDOM; SENSU_CHECK_STATUS=`expr $SENSU_CHECK_OUTPUT % 3`; echo $SENSU_CHECK_OUTPUT; if [ $SENSU_CHECK_STATUS = 0 ]; then true; else `exit $SENSU_CHECK_STATUS`; fi",
       "subscribers": [
-        "roundrobin:proxy-request-poller"
+        "roundrobin:proxy-request-poller",
+        "test"
       ],
       "interval": 10,
       "proxy_requests": {

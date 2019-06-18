@@ -16,14 +16,14 @@ Here's the workflow I've been using to build docker images locally, and run them
   kubectl installed._
 
 ### Part 1: Build/Deploy Sensu in a containerized environment
-This part assumes you've gone through the prerequisites of setting up Minikube and have it started. If not, do not pass go, do not collect 200 containers. 
+This part assumes you've gone through the prerequisites of setting up Minikube and have it started. If not, do not pass go, do not collect 200 containers.
 
 Before starting, make sure that minikube is using the docker environment:
 ```
 eval $(minikube docker-env)
 ```
 
-1. Build a docker image  
+1. Build a docker image
 
     ```
     $ docker build -t sensu:latest docker/sensu/
@@ -35,11 +35,11 @@ eval $(minikube docker-env)
     $ docker run -t sensu:latest /opt/sensu/bin/sensu-client
     ```
 
-    ...and optionally set Sensu Environment Variables to modify the container configuration:   
+    ...and optionally set Sensu Environment Variables to modify the container configuration:
 
     ```
     $ docker run -e "SENSU_CLIENT_NAME=docker-client-01" -t sensu:latest /opt/sensu/bin/sensu-client
-    ```  
+    ```
 
 5. Configure some Kubernetes services for our deployment (e.g. loadbalancer):
 
@@ -78,7 +78,7 @@ eval $(minikube docker-env)
     sensu-redis    10.47.247.204   <none>           6379/TCP         2d
     sensu-server   10.47.252.108   <pending>   4567:<somerandomport>/TCP   21m
     ```
-    
+
     You should now be able to query the "sensu-server" service to
     hit the Sensu API, as follows:
 
@@ -90,12 +90,12 @@ The instructions above will get you the following:
 * Sensu server container (running the api/server services)
 * Redis container for use as the transport/datastore
 * A set of sensu-clients to demo checks with.
-  _NOTE: In practice, we **HIGHLY** recommend using RabbitMQ as the transport instead. 
+  _NOTE: In practice, we **HIGHLY** recommend using RabbitMQ as the transport instead.
   This is purely for demo purposes and shouldn't be relied on as a production-ready solution._
 
-If you'd like to see Sensu & Kubernetes in action dumping some pseudo-realistic stats to a TSDB (InfluxDB, in this case), proceed below to 
+If you'd like to see Sensu & Kubernetes in action dumping some pseudo-realistic stats to a TSDB (InfluxDB, in this case), proceed below to
 
-### Part 2: Spin up a dummy app & InfluxDB instance 
+### Part 2: Spin up a dummy app & InfluxDB instance
 
 To spin up the Dummy app, head on over to the [README](docker/dummy/README.md), which will cover prerequisites for getting the dummy app, as well as the prometheus collector up and running. For more information about the prometheus collector, see [Portertech's repo](https://github.com/portertech/sensu-prometheus-collector).
 
@@ -109,7 +109,7 @@ $ CGO_ENABLED=0 GOOS=linux go build -a -ldflags '-extldflags "-static"' .
 $ docker build -t dummy:latest .
 ```
 
-The above will build a docker image with a dummy load-balanced application with the sensu-prometheus-exporter binary already in place and ready to send metrics to an InfluxDB instance. 
+The above will build a docker image with a dummy load-balanced application with the sensu-prometheus-exporter binary already in place and ready to send metrics to an InfluxDB instance.
 
 Once you've created the image, you'll need to set up your Kubernetes service/deployment:
 
@@ -138,4 +138,4 @@ $ minikube service list
 
 Optionally, you can do `$ minkube service --url sensu-server`, which should return the port mapping similar to the above table.
 
-Why do you need this? Well, the current docker image for Sensu that's been deployed here doesn't include the Uchiwa dashboard. But, you can use say, a [Sensu Vagrant machine](https://github.com/asachs01/sensu-up-and-running) which does include a dashboard to connect to the sensu-api service in your Docker container and see the clients present. 
+Why do you need this? Well, the current docker image for Sensu that's been deployed here doesn't include the Uchiwa dashboard. But, you can use say, a [Sensu Vagrant machine](https://github.com/asachs01/sensu-up-and-running) which does include a dashboard to connect to the sensu-api service in your Docker container and see the clients present.

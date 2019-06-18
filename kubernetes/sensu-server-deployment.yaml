@@ -27,8 +27,8 @@ spec:
 
       containers:
       - name: sensu-server
-        image: sensu:latest
-        imagePullPolicy: Never
+        image: 10.150.4.63:5000/sensu:latest
+        imagePullPolicy: IfNotPresent
         env:
         - name: SENSU_TRANSPORT_NAME
           value: "redis"
@@ -44,8 +44,8 @@ spec:
         command: ["/opt/sensu/bin/sensu-server"]
 
       - name: sensu-api
-        image: sensu:latest
-        imagePullPolicy: Never
+        image: 10.150.4.63:5000/sensu:latest
+        imagePullPolicy: IfNotPresent
         env:
         - name: SENSU_TRANSPORT_NAME
           value: "redis"

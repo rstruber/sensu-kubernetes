@@ -1,15 +1,15 @@
 # Source
-FROM ubuntu:16.04
+FROM ubuntu:18.04
 
 # Labels
 LABEL vendor=Sensu,\ Inc. \
-  org.sensuapp.version="1.2.1" \
-  org.sensuapp.release-date="2017-10-09"
+  org.sensuapp.version="1.7.0" \
+  org.sensuapp.release-date="2019-02-19"
 
 # Build arguments
-ARG SENSU_REPO_HOST=https://repositories.sensuapp.org
-ARG SENSU_REPO_PATH=/apt/pool/xenial/main/s/sensu
-ARG SENSU_PACKAGE_VERSION=1.2.1-2
+ARG SENSU_REPO_HOST=http://sensu.global.ssl.fastly.net
+ARG SENSU_REPO_PATH=/apt/pool/bionic/main/s/sensu
+ARG SENSU_PACKAGE_VERSION=1.7.0-2
 ARG SENSU_PACKAGE_ARCH=amd64
 ARG SENSU_PACKAGE_FORMAT=deb
 
@@ -23,7 +23,7 @@ ENV \
 # Build instructions
 WORKDIR /tmp
 RUN \
-  apt-get update && apt-get install -y --force-yes \
+  apt-get update && apt-get install -y \
   wget build-essential && \
   wget ${SENSU_REPO_HOST}/${SENSU_REPO_PATH}/sensu_${SENSU_PACKAGE_VERSION}_${SENSU_PACKAGE_ARCH}.${SENSU_PACKAGE_FORMAT} && \
   dpkg -i sensu_${SENSU_PACKAGE_VERSION}_${SENSU_PACKAGE_ARCH}.${SENSU_PACKAGE_FORMAT} && \

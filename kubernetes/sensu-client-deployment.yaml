@@ -21,8 +21,8 @@ spec:
 
       containers:
       - name: sensu-client
-        image: sensu:latest
-        imagePullPolicy: Never
+        image: 10.150.4.63:5000/sensu:latest
+        imagePullPolicy: IfNotPresent
         env:
         - name: SENSU_TRANSPORT_NAME
           value: "redis"
