@@ -28,12 +28,12 @@ spec:
       containers:
       - name: sensu-server
         image: 10.150.4.63:5000/sensu:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: SENSU_TRANSPORT_NAME
           value: "redis"
         - name: REDIS_URL
-          value: "redis://$(SENSU_REDIS_SERVICE_HOST):$(SENSU_REDIS_SERVICE_PORT)/0"
+          value: "redis://$(SENSU_REDIS_CLUSTER_SERVICE_HOST):$(SENSU_REDIS_CLUSTER_SERVICE_PORT)/0"
         volumeMounts:
         - name: sensu-server-config
           mountPath: /etc/sensu/conf.d/server/
@@ -45,14 +45,12 @@ spec:
 
       - name: sensu-api
         image: 10.150.4.63:5000/sensu:latest
-        imagePullPolicy: IfNotPresent
+        imagePullPolicy: Always
         env:
         - name: SENSU_TRANSPORT_NAME
           value: "redis"
         - name: REDIS_URL
-          value: "redis://$(SENSU_REDIS_SERVICE_HOST):$(SENSU_REDIS_SERVICE_PORT)/0"
-        - name: SENSU_API_PORT
-          value: "4567"
+          value: "redis://$(SENSU_REDIS_CLUSTER_SERVICE_HOST):$(SENSU_REDIS_CLUSTER_SERVICE_PORT)/0"
         ports:
         - containerPort: 4567
         volumeMounts:

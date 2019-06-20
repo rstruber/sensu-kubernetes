@@ -1,0 +1,9 @@
+kind: Endpoints
+apiVersion: v1
+metadata:
+  name: sensu-queue
+subsets:
+  - addresses:
+      - ip: 172.31.0.5
+    ports:
+      - port: 80

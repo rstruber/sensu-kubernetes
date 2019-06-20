@@ -1,0 +1,9 @@
+kind: Service
+apiVersion: v1
+metadata:
+ name: sensu-queue
+spec:
+ type: ClusterIP
+ ports:
+ - port: 80
+   targetPort: 80
