@@ -46,9 +46,7 @@ eval $(minikube docker-env)
     ```
     $ cd kubernetes
     $ kubectl create -f sensu-redis-service.yaml
-    service "sensu-redis" created
     $ kubectl create -f sensu-server-service.yaml
-    service "sensu-server" created
     ```
 
 6. Deploy some configuration files as configmaps:
@@ -57,7 +55,6 @@ eval $(minikube docker-env)
     $ kubectl create configmap sensu-client-config --from-file=./configmaps/clients/conf.d/client/
     $ kubectl create configmap sensu-server-config --from-file=./configmaps/servers/conf.d/server/
     $ kubectl create configmap sensu-server-check-config --from-file=./configmaps/servers/conf.d/checks/
-    configmap "sensu-server-check-config" created
     $ kubectl create configmap sensu-server-handler-config --from-file=./configmaps/servers/conf.d/handlers/
     ```
 
